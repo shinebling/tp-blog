@@ -31,4 +31,16 @@ return [
     'error_message'    => '页面错误！请稍后再试～',
     // 显示错误信息
     'show_error_msg'   => false,
+
+    // 登录salt
+    'login_md5'        =>'kjhsla2312lk4j12412312m',
+
+    // token key
+    'token_key'        =>'Z#ke0$rnSE',
+    // token key过期时间
+    'token_expire_time'=> 7200,
+    // token 签发组织
+    'token_iss'=> 'api.wangxuedong.com',
+    // token 签发作者
+    'token_aud'=> 'echo',
 ];

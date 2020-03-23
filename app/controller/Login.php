@@ -3,6 +3,8 @@ namespace app\controller;
 
 use app\BaseController;
 use think\Request;
+use app\util\Token;
+use app\service\Auth;
 use app\model\Login as LoginModel;
 use app\validate\LoginValidate;
 use think\exception\ValidateException;
@@ -26,45 +28,49 @@ class Login extends BaseController
 		$this->param = $this->request->param();
     }
 
-    public fucntion login()
+    public function login()
     {
-        $ret['code'] = 0;
-        $ret['data'] = [];
-        $ret['message'] = 'success';
-        $user = LoginModel::where('account', $this->param['account'])->find();
-        if (empty($user)) {
-            $ret['code'] = -1;
-            $ret['message'] = '用户不存在';
-        } else {
-            if(md5(md5($this->param['password'] != $user->password) {
-                $ret['code'] = -1;
-                $ret['message'] = '密码错误';
+        try {
+            validate(LoginValidate::class)->scene('login')->check($this->param);
+            $user = LoginModel::where('account', $this->param['account'])->find();
+            if (empty($user)) {
+                return ajaxReturn(ERR_CODE_LOGIN,'用户不存在');
+            } else {
+                if(Auth::getMd5($this->param['password']) != $user->password) {
+                    return ajaxReturn(ERR_CODE_LOGIN,'密码不正确');
+                }
             }
+            $userToken = Token::createToken($user->id);
+            LoginModel::update(['name' => 'thinkphp'], ['id' => 1]);
+        } catch (ValidateException $e) {
+            // 验证失败 输出错误信息
+            return ajaxReturn(ERR_CODE_LOGIN,$e->getError());
         }
-        return json_encode($ret, true);
+        return ajaxReturn(SUCCESS,'',['token'=>Token::createToken($user->id)]);
     }
 
     public function register()
     {
-        $ret['code'] = 0;
-        $ret['data'] = [];
-        $ret['message'] = 'success';
         try {
             validate(LoginValidate::class)->check($this->param);
-            $this->param['password'] = md5(md5($this->param['password']));
+            $this->param['password'] = Auth::getMd5($this->param['password']);
             unset($this->param['confirmPassword']);
-            try{
-                $ret = (new LoginModel)->save($this->param);
-                Session::set('account',$this->param['account']);
-            } catch (\Exception $e) {
-                $ret['code'] = -1;
-                $ret['message'] = $e->getError();
+            $ret = LoginModel::register($this->param);
+            if (!empty($ret)) {
+                return ajaxReturn(ERR_CODE_REGISTER,$ret);
             }
         } catch (ValidateException $e) {
             // 验证失败 输出错误信息
-            $ret['code'] = -1;
-            $ret['message'] = $e->getError();
+            return ajaxReturn(ERR_CODE_REGISTER,$e->getError());
         }
-        return json_encode($ret, true);
+        return ajaxReturn(SUCCESS);
+    }
+
+    /*
+    * 找回密码
+    */
+    public function retrievePassword()
+    {
+
     }
 }

@@ -1,17 +1,20 @@
 <?php
 // 回复信息配置
-// 统一的管理项目操作过程中需要返回用户信息的 内容
-// 数据库
 return [
     'code' => [
-        'SUCCESS'                     => 0,
-        'ERROR_PARAM'                 => -1,
-        // register错误信息
-        'ERROR_REGISTER'              => -1001,
+        'SUCCESS'                                   => 0,
+        'ERR_CODE_INTERFACE_ERROR'                  => -10000,
+        'ERR_CODE_PARAM_ERROR'                      => -10001,
+        'ERR_CODE_REGISTER'                         => -10002,
+        'ERR_CODE_LOGIN'                            => -10003,
+        'ERR_CODE_LOGIN_OVERDUE'                    => -10004,
     ],
     'info' => [
-        1     => '操作成功',
-        -1    => '参数错误',
-        -1001 => '注册错误',
+        0           => 'success',
+        -10000       => '接口请求错误',
+        -10001       => '参数错误',
+        -10002       => '注册错误',
+        -10003       => '登录错误',
+        -10004       => '登录过期，请重新登录',
     ]
 ];

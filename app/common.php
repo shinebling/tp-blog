@@ -1,18 +1,15 @@
 <?php
 // 应用公共文件
-use think\Loader;
-Loader::addNamespace('data', Loader::getRootPath() . 'data' . DIRECTORY_SEPARATOR);
 /**
  * 规定回复信息的格式的方法
  * @param  integer $code 信息码
  * @param  array  $data [description]
  * @return [type]       [description]
  */
-function ajaxRuturn($code, $data = [])
-{
-    $result = ['code' => $code, 'msg' => getMessage($code)];
-    $result = (!empty($data)) ? $result['data'] = $data : $result;
-    return json($result);
+function ajaxReturn($code, $msg = '', $data = []){
+    $result = ['code' => $code, 'message' => getMessage($code).(empty($msg) ? $msg : "：".$msg)];
+    $result['data'] = empty($data) ? [] : $data;
+    return json()->data($result);
 }
 
 /**
@@ -21,7 +18,7 @@ function ajaxRuturn($code, $data = [])
  * @return string       信息对应的稍息
  */
 function getMessage($code){
-    $info = config('message.info'); // array 数组
-    return (array_key_exists($code, $info)) ? $info[$code] : '操作失败';
+    $messageInfo = config('message.info'); // array 数组
+    return (array_key_exists($code, $messageInfo)) ? $messageInfo[$code] : '未知错误';
 }
 

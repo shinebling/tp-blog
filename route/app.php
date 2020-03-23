@@ -15,4 +15,5 @@ Route::get('think', function () {
 });
 
 Route::get('hello/:name', 'index/hello');
-Route::post('register', 'Login/register');
+Route::post('register', 'Login/register')->allowCrossDomain();;
+Route::post('login', 'Login/login')->allowCrossDomain();;

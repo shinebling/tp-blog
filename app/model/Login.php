@@ -2,6 +2,7 @@
 namespace app\model;
 
 use think\Model;
+use think\facade\Db;
 
 class Login extends Model
 {
@@ -12,4 +13,16 @@ class Login extends Model
         'createdAt' => 'timestamp',
         'updatedAt' => 'timestamp',
     ];
+
+    public static function register($param)
+    {
+        try {
+            $param['createdAt'] = time();
+            Db::name('users')->insert($param);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+        return;
+    }
+
 }
