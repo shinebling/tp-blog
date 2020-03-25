@@ -5,8 +5,8 @@ return [
     ],
 
     'listen'    => [
-        'AppInit'  => ['app\listener\Message'],
-        'HttpRun'  => [],
+        'AppInit'  => [],
+        'HttpRun'  => ['app\listener\Message'],
         'HttpEnd'  => [],
         'LogLevel' => [],
         'LogWrite' => [],

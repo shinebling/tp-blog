@@ -25,4 +25,17 @@ class Login extends Model
         return;
     }
 
+    public static function saveEmailCaptcha($account, $captcha)
+    {
+         try {
+            $param['createdAt'] = time();
+            Db::name('users')
+                ->where('account', $account)
+                ->update(['emailCaptcha' => $captcha]);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+        return;
+    }
+
 }

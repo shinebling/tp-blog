@@ -20,6 +20,8 @@ class LoginValidate extends Validate
         'confirmPassword.require' => '确认密码不能为空',
         'confirmPassword.length' => '确认密码应为4~18字符',
         'confirmPassword.confirm' => '两次输入的密码不匹配',
+        'email.require' => '邮箱不能为空',
+        'email.email' => '邮箱格式不正确',
     ];
 
     // login 验证场景定义
@@ -30,4 +32,11 @@ class LoginValidate extends Validate
             ->remove('password', 'length');
     }
 
+    // 发送验证码 验证场景定义
+    public function sceneCaptcha()
+    {
+        return $this->only(['account','email'])
+            ->remove('account', 'unique')
+            ->append('email', 'require|email');
+    }
 }
