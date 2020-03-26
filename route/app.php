@@ -19,4 +19,5 @@ Route::post('register', 'Login/register')->allowCrossDomain();;
 Route::post('login', 'Login/login')->allowCrossDomain();;
 //Route::post('user', 'Login/login')->middleware('auth')->allowCrossDomain();;
 Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->allowCrossDomain();;
+Route::post('retrievepassword', 'Login/retrievePassword')->allowCrossDomain();;
 //Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->middleware('auth')->allowCrossDomain();;

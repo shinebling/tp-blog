@@ -9,7 +9,8 @@ return [
         'ERR_CODE_LOGIN'                            => -10003,
         'ERR_CODE_LOGIN_OVERDUE'                    => -10004,
         'ERR_CODE_GET_CAPTCHA'                      => -10005,
-        'ERR_CODE_SEND_CAPTCHA'                      => -10006,
+        'ERR_CODE_SEND_CAPTCHA'                     => -10006,
+        'ERR_CODE_BIND_EMAIL'                       => -10007,
     ],
     'info' => [
         0           => 'success',
@@ -20,5 +21,6 @@ return [
         -10004       => '登录过期，请重新登录',
         -10005       => '获取验证码错误',
         -10006       => '发送验证码错误',
+        -10007       => '绑定邮箱失败',
     ]
 ];

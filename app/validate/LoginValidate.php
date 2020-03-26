@@ -39,4 +39,13 @@ class LoginValidate extends Validate
             ->remove('account', 'unique')
             ->append('email', 'require|email');
     }
+
+    // 验证验证码 验证场景定义
+    public function sceneRetrieve()
+    {
+        return $this->only(['account','captcha','email'])
+            ->remove('account', 'unique')
+            ->append('email', 'require|email')
+            ->append('captcha', 'require');
+    }
 }
