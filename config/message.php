@@ -11,6 +11,7 @@ return [
         'ERR_CODE_GET_CAPTCHA'                      => -10005,
         'ERR_CODE_SEND_CAPTCHA'                     => -10006,
         'ERR_CODE_BIND_EMAIL'                       => -10007,
+        'ERR_CODE_GET_USER_INFO'                    => -10008,
     ],
     'info' => [
         0           => 'success',
@@ -22,5 +23,6 @@ return [
         -10005       => '获取验证码错误',
         -10006       => '发送验证码错误',
         -10007       => '绑定邮箱失败',
+        -10008       => '获取用户信息失败',
     ]
 ];

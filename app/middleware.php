@@ -7,7 +7,8 @@ return [
     // \think\middleware\LoadLangPack::class,
     // Session初始化
     // \think\middleware\SessionInit::class
-
+    // 跨域
+    \think\middleware\AllowCrossDomain::class
     //登录态校验中间件
     //\app\middleware\Auth::class,
 ];

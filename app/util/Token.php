@@ -51,4 +51,23 @@ class Token
         }
         return $userId;
     }
+
+    /**
+     * 校验token
+     */
+    public static function getTokenInfo($jwt)
+    {
+        $key = config('app.token_key');
+        $decoded = JWT::decode($jwt, $key, ['HS256']); //HS256方式，这里要和签发的时候对应
+        $userInfo = (array)$decoded;
+        $userInfo = $userInfo['data'];
+        if (is_object($userInfo)) {
+            $info = [];
+            foreach ($userInfo as $key => $value) {
+                $info[$key] = $value;
+            }
+        }
+//        $userId = $userInfo['data']['id'];
+        return $info['id'];
+    }
 }

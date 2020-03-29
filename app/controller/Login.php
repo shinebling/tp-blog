@@ -34,7 +34,7 @@ class Login extends BaseController
     {
         try {
             validate(LoginValidate::class)->scene('login')->check($this->param);
-            $user = LoginModel::where('account', $this->param['account'])->find();
+            $user = LoginModel::where('account', $this->param['account'])->findOrEmpty();
             if (empty($user)) {
                 return ajaxReturn(ERR_CODE_LOGIN,'用户不存在');
             } else {
@@ -56,6 +56,7 @@ class Login extends BaseController
         try {
             validate(LoginValidate::class)->check($this->param);
             $this->param['password'] = Auth::getMd5($this->param['password']);
+            $this->param['nickname'] = ' 用户：'.$this->param['account'];
             unset($this->param['confirmPassword']);
             LoginModel::create($this->param);
         } catch (ValidateException $e) {

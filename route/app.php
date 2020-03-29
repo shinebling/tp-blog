@@ -15,9 +15,12 @@ Route::get('think', function () {
 });
 
 Route::get('hello/:name', 'index/hello');
-Route::post('register', 'Login/register')->allowCrossDomain();;
-Route::post('login', 'Login/login')->allowCrossDomain();;
-//Route::post('user', 'Login/login')->middleware('auth')->allowCrossDomain();;
-Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->allowCrossDomain();;
-Route::post('retrievepassword', 'Login/retrievePassword')->allowCrossDomain();;
-//Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->middleware('auth')->allowCrossDomain();;
+Route::post('register', 'Login/register')->allowCrossDomain();
+Route::post('login', 'Login/login')->allowCrossDomain();
+//Route::post('user', 'Login/login')->middleware('auth')->allowCrossDomain();
+Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->allowCrossDomain();
+Route::post('retrievepassword', 'Login/retrievePassword')->allowCrossDomain();
+//Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->middleware('auth')->allowCrossDomain();
+
+Route::get('user', 'User/getUserInfo')->allowCrossDomain();
+Route::get('test', 'Test/test')->allowCrossDomain();
