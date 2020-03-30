@@ -6,7 +6,7 @@ return [
 
     'listen'    => [
         'AppInit'  => [],
-        'HttpRun'  => ['app\listener\Message','app\listener\CORS'],
+        'HttpRun'  => ['app\listener\Message','app\listener\CORS','app\listener\LoaderFacade'],
         'HttpEnd'  => [],
         'LogLevel' => [],
         'LogWrite' => [],

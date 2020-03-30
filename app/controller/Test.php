@@ -1,11 +1,14 @@
 <?php
 namespace app\controller;
 
+use ESearch;
+
 class Test
 {
     public function test()
     {
-        $avatorPath = public_path().'public\static\avator.png';
-        return ajaxReturn(SUCCESS,$avatorPath);
+        $ret = ESearch::addIndex();
+        return ajaxReturn(SUCCESS,$ret);
+//        ESearch::addIndex();
     }
 }

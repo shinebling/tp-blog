@@ -2,8 +2,6 @@
 
 namespace app\listener;
 
-use think\Response;
-
 class CORS
 {
     /**
