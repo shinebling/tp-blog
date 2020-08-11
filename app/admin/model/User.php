@@ -1,5 +1,5 @@
 <?php
-namespace app\model;
+namespace app\admin\model;
 
 use think\Model;
 use think\facade\Db;
@@ -15,10 +15,19 @@ class User extends Model
     protected $createTime = 'createdAt';
     protected $updateTime = 'updatedAt';
 
-    public function getUserInfo($userId)
+    public function getUserInfoById($userId)
     {
         $data = Db::table('users')
+            ->field('id,nickname,avatar,account')
             ->where('id',$userId)
+            ->find();
+        return $data;
+    }
+
+    public function getUserInfoByAccount($account)
+    {
+        $data = Db::table('users')
+            ->where('account',$account)
             ->find();
         return $data;
     }

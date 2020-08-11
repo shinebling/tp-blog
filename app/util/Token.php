@@ -67,7 +67,6 @@ class Token
                 $info[$key] = $value;
             }
         }
-//        $userId = $userInfo['data']['id'];
         return $info['id'];
     }
 }

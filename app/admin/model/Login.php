@@ -1,5 +1,5 @@
 <?php
-namespace app\model;
+namespace app\admin\model;
 
 use think\Model;
 use think\facade\Db;
@@ -27,5 +27,6 @@ class Login extends Model
         }
         return;
     }
+
 
 }

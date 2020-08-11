@@ -1,5 +1,5 @@
 <?php
-namespace app\service;
+namespace app\admin\service;
 
 class Auth
 {

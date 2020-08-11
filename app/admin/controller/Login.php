@@ -1,12 +1,13 @@
 <?php
-namespace app\controller;
+namespace app\admin\controller;
 
 use app\BaseController;
 use think\Request;
 use app\util\Token;
-use app\service\Auth;
-use app\model\Login as LoginModel;
-use app\validate\LoginValidate;
+use app\admin\service\Auth;
+use app\admin\model\Login as LoginModel;
+use app\admin\model\User as UserModel;
+use app\admin\validate\LoginValidate;
 use think\exception\ValidateException;
 use \PHPMailer\PHPMailer;
 
@@ -34,21 +35,22 @@ class Login extends BaseController
     {
         try {
             validate(LoginValidate::class)->scene('login')->check($this->param);
-            $user = LoginModel::where('account', $this->param['account'])->findOrEmpty();
+            $user = (new UserModel)->getUserInfoByAccount($this->param['account']);
             if (empty($user)) {
                 return ajaxReturn(ERR_CODE_LOGIN,'用户不存在');
-            } else {
-                if(Auth::getMd5($this->param['password']) != $user->password) {
-                    return ajaxReturn(ERR_CODE_LOGIN,'密码不正确');
-                }
             }
-            $userToken = Token::createToken($user->id);
-            LoginModel::update(['rememberToken' =>  $userToken], ['id' => $user->id]);
+            if(Auth::getMd5($this->param['password']) != $user['password']) {
+                $pa1 = Auth::getMd5($this->param['password']);
+                return ajaxReturn(ERR_CODE_LOGIN,'密码不正确');
+            }
+            $userToken = Token::createToken($user['id']);
+            LoginModel::update(['rememberToken' =>  $userToken], ['id' => $user['id']]);
         } catch (ValidateException $e) {
-            // 验证失败 输出错误信息
+            return ajaxReturn(ERR_CODE_LOGIN,$e->getError());
+        } catch (\DataNotFoundException $e){
             return ajaxReturn(ERR_CODE_LOGIN,$e->getError());
         }
-        return ajaxReturn(SUCCESS,'',['token'=>Token::createToken($user->id)]);
+        return ajaxReturn(SUCCESS,'',['token'=>Token::createToken($user['id'])]);
     }
 
     public function register()
@@ -56,7 +58,8 @@ class Login extends BaseController
         try {
             validate(LoginValidate::class)->check($this->param);
             $this->param['password'] = Auth::getMd5($this->param['password']);
-            $this->param['nickname'] = ' 用户：'.$this->param['account'];
+            $this->param['account'] = $this->param['account'];
+            $this->param['nickname'] = '未命名用户|'.time();
             unset($this->param['confirmPassword']);
             LoginModel::create($this->param);
         } catch (ValidateException $e) {

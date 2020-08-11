@@ -1,5 +1,5 @@
 <?php
-namespace app\middleware;
+namespace app\admin\middleware;
 
 use \think\Request;
 use app\util\Token;

@@ -12,7 +12,7 @@ function ajaxReturn($code, $msg = '', $data = []){
         $code = $messageCode[$code];
     }
     $result = ['code' => $code, 'message' => getMessage($code).(empty($msg) ? $msg : "：".$msg)];
-    $result['data'] = empty($data) ? [] : $data;
+    $result['data'] = empty($data) ? $data : $data;
     return json()->data($result);
 }
 

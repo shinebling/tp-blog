@@ -10,11 +10,42 @@
 // +----------------------------------------------------------------------
 use think\facade\Route;
 
-Route::get('think', function () {
-    return 'hello,ThinkPHP6!';
-});
+// admin
+Route::get('statistics', 'app\admin\controller\Admin@getStatisticData')->allowCrossDomain();
+Route::post('register', 'app\admin\controller\Login@register')->allowCrossDomain();
+Route::post('login', 'app\admin\controller\Login@login')->allowCrossDomain();
 
-Route::get('hello/:name', 'index/hello');
+
+// 文章
+Route::get('init_article', 'app\admin\controller\Article@initArticle')->allowCrossDomain();
+Route::get('create_article', 'app\admin\controller\Article@initArticle')->allowCrossDomain();
+Route::get('article_list', 'app\admin\controller\Article@getArticleList')->allowCrossDomain();
+Route::get('delete_article', 'app\admin\controller\Article@delArticle')->allowCrossDomain();
+
+// 分类
+Route::get('category_list', 'app\admin\controller\Category@getCategoryList')->allowCrossDomain();
+Route::get('delete_category', 'app\admin\controller\Category@delCategory')->allowCrossDomain();
+Route::post('create_category', 'app\admin\controller\Category@createCategory')->allowCrossDomain();
+Route::get('category_detail', 'app\admin\controller\Category@getCategoryInfoById')->allowCrossDomain();
+Route::post('edit_category', 'app\admin\controller\Category@editCategory')->allowCrossDomain();
+
+
+// 用户
+Route::get('userinfo', 'app\admin\controller\User@getUserInfo')->allowCrossDomain();
+// Route::group('blog', function () {
+//     Route::rule(':id', 'blog/read');
+//     Route::rule(':name', 'blog/read');
+// })->ext('html')->pattern(['id' => '\d+', 'name' => '\w+']);
+
+
+// Route::group('blog', function () {
+//     Route::get(':id', 'read');
+//     Route::post(':id', 'update');
+//     Route::delete(':id', 'delete');
+// })->prefix('blog/')->ext('html')->pattern(['id' => '\d+']);
+
+
+
 Route::post('register', 'Login/register')->allowCrossDomain();
 Route::post('login', 'Login/login')->allowCrossDomain();
 //Route::post('user', 'Login/login')->middleware('auth')->allowCrossDomain();
@@ -22,5 +53,5 @@ Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->allowCrossDomain();
 Route::post('retrievepassword', 'Login/retrievePassword')->allowCrossDomain();
 //Route::post('sendcpatcha', 'Login/sendEmailCpatcha')->middleware('auth')->allowCrossDomain();
 
-Route::get('user', 'User/getUserInfo')->allowCrossDomain();
+
 Route::get('test', 'Test/test')->allowCrossDomain();
