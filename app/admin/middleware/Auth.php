@@ -3,6 +3,7 @@ namespace app\admin\middleware;
 
 use \think\Request;
 use app\util\Token;
+use think\facade\Log;
 
 class Auth
 {
@@ -16,10 +17,11 @@ class Auth
             return ajaxReturn('ERR_CODE_LOGIN_OVERDUE');
         } else {
             $token = $tokenInfo['token'];
-            $checkTokenRet =  Token::checkToken($token);
-           if (!empty($checkTokenRet)) {
-               return ajaxReturn('ERR_CODE_LOGIN_OVERDUE');
-           }
+            list($dealRet, $checkTokenRet) =  Token::checkToken($token);
+            if (!$dealRet) {
+                return ajaxReturn(ERR_CODE_LOGIN_OVERDUE);
+            }
+            $request->userId = $checkTokenRet;
        }
        return $next($request);
     }

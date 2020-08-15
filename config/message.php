@@ -3,6 +3,7 @@
 return [
     'code' => [
         'SUCCESS'                                   => 0,
+        'FAIL'                                      => -1,
         'ERR_CODE_INTERFACE_ERROR'                  => -10000,
         'ERR_CODE_PARAM_ERROR'                      => -10001,
         'ERR_CODE_REGISTER'                         => -10002,
@@ -21,9 +22,13 @@ return [
         'ERR_CODE_CREATE_CATEGORY'                  => -10015,
         'ERR_CODE_DEL_CATEGORY'                     => -10016,
         'ERR_CODE_GET_CATEGORY_INFO'                => -10017,
+        'ERR_CODE_EDIT_USER_INFO'                   => -10018,
+        'ERR_CODE_GET_ARTICLE_DETAIL'               => -10019,
+        'ERR_CODE_SAVE_ARTICLE'                     => -10020,
     ],
     'info' => [
-        0           => 'success',
+        0            => 'success',
+        -1           => '失败',
         -10000       => '接口请求错误',
         -10001       => '参数错误',
         -10002       => '注册错误',
@@ -42,5 +47,8 @@ return [
         -10015       => '创建分类失败',
         -10016       => '删除分类失败',
         -10017       => '获取分类信息失败',
+        -10018       => '修改用户信息失败',
+        -10019       => '获取文章详情失败',
+        -10020       => '保存文章失败',
     ]
 ];

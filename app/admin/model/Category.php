@@ -15,9 +15,25 @@ class Category extends Model
     protected $createTime = 'createdAt';
     protected $updateTime = 'updatedAt';
 
+    const CATEGORY_DEL              = 1;                // 已删除
+    const CATEGORY_NOT_DEL          = 0;                // 未删除
+
+    const CATEGORY_LIMIT_NUM        = 30;               // 最多可添加分类个数
+
     public function createCategory($userId, $param) 
     {
         try { 
+            $count = Db::table('category')
+                ->alias('c')
+                ->where([
+                    'userId' => $userId,
+                    'isDel'  => Category::CATEGORY_NOT_DEL,
+                ])
+                ->where('id','<>', 1)
+                ->count();
+            if ($count >= Category::CATEGORY_LIMIT_NUM) {
+                return [false, '最多可添加'.Category::CATEGORY_LIMIT_NUM.'个分类'];
+            }
             $insertData['userId'] = $userId;
             $insertData['name'] = $param['name'];
             $insertData['description'] = !empty($param['description']) ? $param['description'] : '';
@@ -42,28 +58,41 @@ class Category extends Model
     public function getCategoryList($userId, $param)
     {
         try {
-            $count = Db::table('category')
-                ->where('userId', $userId)
-                ->where('id','<>',1)
-                ->where('isDel',0)
-                ->count();
+            $where = [
+                'c.userId' => $userId,
+                'c.isDel'  => Category::CATEGORY_NOT_DEL,
+            ];
 
-            $data = Db::table('category')
-                ->where('userId', $userId)
-                ->field('id,name,description,createdAt,updatedAt')
-                ->where('id','<>',1)
-                ->where('isDel',0)
+            $count = Db::table('category')
+                ->alias('c')
+                ->field('c.id,c.name,c.description,c.createdAt,c.updatedAt')
+                ->where($where)
+                ->where('id','<>', 1)
                 ->order('updatedAt', 'desc')
                 ->select()
                 ->toArray();
-            foreach ($data as $k => &$item) {
-                $articleCount = Db::name('article')
-                                    ->where('userId', $userId)
-                                    ->where('categoryId', $item['id'])
-                                    ->count();
-                $item['count'] = $articleCount;
+
+            $data = Db::table('category')
+                    ->alias('c')
+                    ->field('c.id,c.name,c.description,c.createdAt,c.updatedAt,count(c.id) as num')
+                    ->join('article a','c.id = a.categoryId')
+                    ->where($where)
+                    ->group('a.categoryId')
+                    ->order('num', 'desc')
+                    ->order('c.updatedAt', 'desc')
+                    ->select()
+                    ->toArray();
+
+            $categoryIds = array_column($data, 'id');
+
+            foreach ($count as $k => &$item) {
+                if (!in_array($item['id'], $categoryIds)) {
+                    $item['num'] = 0;
+                    $data[] = $item;
+                }
             }
-            return [true, ['list'=>$data,'total'=>$count]];
+
+            return [true, ['list'=>$data,'total'=>count($count)]];
         } catch (\DataNotFoundException $e) {
             return [fasle, $e->getMessage];
         }

@@ -10,6 +10,7 @@ use app\admin\model\User as UserModel;
 use app\admin\validate\LoginValidate;
 use think\exception\ValidateException;
 use \PHPMailer\PHPMailer;
+use think\facade\Log;
 
 class Login extends BaseController
 {
@@ -34,6 +35,7 @@ class Login extends BaseController
     public function login()
     {
         try {
+            Log::info('走到 login');
             validate(LoginValidate::class)->scene('login')->check($this->param);
             $user = (new UserModel)->getUserInfoByAccount($this->param['account']);
             if (empty($user)) {
@@ -46,10 +48,13 @@ class Login extends BaseController
             $userToken = Token::createToken($user['id']);
             LoginModel::update(['rememberToken' =>  $userToken], ['id' => $user['id']]);
         } catch (ValidateException $e) {
+            Log::info('ValidateException');
             return ajaxReturn(ERR_CODE_LOGIN,$e->getError());
         } catch (\DataNotFoundException $e){
+            Log::info('DataNotFoundException');
             return ajaxReturn(ERR_CODE_LOGIN,$e->getError());
         }
+            Log::info('SUCCESS');
         return ajaxReturn(SUCCESS,'',['token'=>Token::createToken($user['id'])]);
     }
 

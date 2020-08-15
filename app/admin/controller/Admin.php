@@ -25,11 +25,7 @@ class Admin extends BaseController
 
     public function getStatisticData(){
     	try {
-             if (!isset($this->header['token'])) {
-                return ajaxReturn('ERR_CODE_LOGIN_OVERDUE');
-            }
-            $token = $this->header['token'];
-            $userId = Token::getTokenInfo($token);
+            $userId = $this->request->userId;
     		$ret = (new AdminModel)->getStatisticData($userId);
     		if ($ret['code'] != 0){
                 return ajaxReturn(ERR_CODE_GET_INDEX_DATA,$ret['msg']);

@@ -17,11 +17,15 @@ class User extends Model
 
     public function getUserInfoById($userId)
     {
-        $data = Db::table('users')
-            ->field('id,nickname,avatar,account')
-            ->where('id',$userId)
-            ->find();
-        return $data;
+        try { 
+            $data = Db::table('users')
+                ->field('id,account,nickname,avatar,password')
+                ->where('id',$userId)
+                ->find();
+            return [true, $data];
+        } catch (\DataNotFoundException $e) {
+            return [false, $e->getMessage];
+        }
     }
 
     public function getUserInfoByAccount($account)
@@ -30,5 +34,37 @@ class User extends Model
             ->where('account',$account)
             ->find();
         return $data;
+    }
+
+    public function editUserInfo($userId, $param)
+    {
+        try { 
+            $updateData = [];
+            switch ($param) {
+                case 'avatar':
+                    if (!empty($param['avatar'])) {
+                        $updateData['avatar'] = $param['avatar'];
+                    }
+                    break;
+                case 'nickname':
+                    if (!empty($param['nickname'])) {
+                        $updateData['nickname'] = $param['nickname'];
+                    }
+                    break;
+                case 'password':
+                    if (!empty($param['password'])) {
+                        $updateData['password'] = Auth::getMd5($param['password']);
+                    }
+                    break;
+            }
+            if (!empty($updateData)) {
+                Db::name('users')
+                    ->where('id', $userId)
+                    ->update($updateData);
+            }
+        } catch (\DataNotFoundException $e) {
+            return [false, $e->getMessage];
+        }
+        return [true];
     }
 }

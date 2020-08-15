@@ -3,6 +3,7 @@ namespace app\admin\model;
 
 use think\Model;
 use think\facade\Db;
+use think\facade\Log;
 use think\model\concern\SoftDelete;
 
 class Article extends Model
@@ -19,7 +20,7 @@ class Article extends Model
     public function initArticle($userId){
         try {
             $insertData['id'] = $this->getArticleId();
-            $insertData['title'] = '未命名文章|'.time();
+            $insertData['title'] = '未命名文章|'.$insertData['id'];
             $insertData['userId'] = $userId;
             $insertData['createdAt'] = date('Y-m-d H:i:s',time());
             $insertData['updatedAt'] = date('Y-m-d H:i:s',time());
@@ -32,28 +33,6 @@ class Article extends Model
 
     public function getArticleId() {
         return date('YmdH') . mt_rand(1000, 9999);
-    }
-
-
-    public function createArticle($param){
-        $updateParam = [];  // 更新的参数
-        switch ($param) {
-            case '':
-                # code...
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-        try {
-            Db::name('user')
-            ->where('id', 1)
-            ->update(['name' => 'thinkphp']);
-            return ['code'=> 0, 'data'=>$articleId];
-        } catch (\Exception $e) {
-            return ['code'=>-1, 'msg'=>$e->getMessage];
-        }
     }
 
     // 获取文章列表
@@ -88,10 +67,11 @@ class Article extends Model
                 ->order('a.updatedAt', 'desc')
                 ->order('a.createdAt', 'desc')
                 ->page($currentPage,$pageSize)
-                ->select();
+                ->select()
+                ->toArray();
 
             foreach ($data as &$item) {
-                $item['tags'] = empty($item['tags']) ? [] : json_decode($item['tags'],true);
+                $item['tags'] = empty($item['tags']) ? [] : array_values(json_decode($item['tags'], true));
             }
             return [true, ['list'=>$data,'total'=>$count]];
         } catch (\DataNotFoundException $e) {
@@ -104,6 +84,75 @@ class Article extends Model
             Db::name('article')
                 ->where('id', $articleId)
                 ->update(['isDel' => 1]);
+            return [true, ''];
+        } catch (\DataNotFoundException $e) {
+            return [fasle, $e->getMessage];
+        }
+    }
+
+    public function getArticleDetail($articleId) {
+        try {
+            $articleDetail = Db::name('article')
+                ->alias('a')
+                ->field('a.id,a.content draft, a.title, a.categoryId, c.name as category, a.createdAt, a.updatedAt, a.tags,
+                         a.description, a.draftContent as content, a.isOrigin, a.isPrivate, a.isDraft')
+                ->where('a.id', $articleId)
+                ->join('category c','a.categoryId = c.id')
+                ->find();
+            if (empty($articleDetail)) {
+                return [fasle, '该文章ID不存在'];
+            }
+            $articleDetail['tags'] = empty($articleDetail['tags']) ? '' : array_values(json_decode($articleDetail['tags'], true));
+            return [true, $articleDetail];
+        } catch (\DataNotFoundException $e) {
+            return [fasle, $e->getMessage];
+        }
+    }
+
+    public function editArticle($articleId, $param) {
+        try {
+            Log::info('editArticle---'.json_encode($param));
+            $updateParam = [];
+            foreach ($param as $key => $item) {
+                switch ($key) {
+                    case 'categoryId':
+                        $updateParam['categoryId'] = $item;
+                        break;
+                    case 'title':
+                        $updateParam['title'] = $item;
+                        break;
+                    case 'tags':
+                        $updateParam['tags'] = json_encode($item);
+                        break;
+                    case 'description':
+                        $updateParam['description'] = $item;
+                        break;
+                    case 'isDraft':
+                        $updateParam['isDraft'] = $item ? 1 : 0;
+                        break;
+                    case 'isOrigin':
+                        $updateParam['isOrigin'] = $item ? 1 : 0;
+                        break;
+                    case 'isPrivate':
+                        $updateParam['isPrivate'] = $item ? 1 : 0;
+                        break;
+                }
+            }
+
+            if ($param['isDraft']) {
+                // 存草稿
+                $updateParam['draftContent'] = $param['draft'];
+                Db::name('article')
+                    ->where('id', $articleId)
+                    ->update($updateParam);
+            } else {
+                // 编辑文章（更新）
+                $updateParam['content'] = $param['content'];
+                $updateParam['draftContent'] = $param['content'];
+                Db::name('article')
+                    ->where('id', $articleId)
+                    ->update($updateParam);
+            }
             return [true, ''];
         } catch (\DataNotFoundException $e) {
             return [fasle, $e->getMessage];
