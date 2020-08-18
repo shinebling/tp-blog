@@ -3,6 +3,7 @@ namespace app\admin\controller;
 
 use think\Request;
 use app\util\Token;
+use think\facade\Log;
 use app\admin\model\Category as CategoryModel;
 use app\admin\validate\CategoryValidate;
 
@@ -20,7 +21,7 @@ class Category
     {
         $this->request = $request;
         $this->header = $request->header();
-        $this->param = trimParms($this->request->param());
+        $this->param = $this->request->param();
     }
 
     public function getCategoryInfoById()

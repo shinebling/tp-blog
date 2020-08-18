@@ -24,7 +24,7 @@ class User
     {
         $this->request = $request;
         $this->header = $request->header();
-        $this->param = trimParms($this->request->param());
+        $this->param = $this->request->param();
     }
 
     public function getUserInfo()

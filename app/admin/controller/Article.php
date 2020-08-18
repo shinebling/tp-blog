@@ -19,21 +19,21 @@ class Article
     {
         $this->request = $request;
         $this->header = $request->header();
-        $this->param = trimParms($this->request->param());
+        $this->param = $this->request->param();
     }
 
     public function initArticle()
     {
         try {
             $userId = $this->request->userId;
-            $initArticleRet = (new ArticleModel)->initArticle($userId);
-            if ($initArticleRet['code'] != 0){
-                return ajaxReturn(ERR_CODE_INIT_ARTICLE,$initArticleRet['msg']);
+            list($dealRet, $response) = (new ArticleModel)->initArticle($userId);
+            if (!$dealRet) {
+                return ajaxReturn(ERR_CODE_INIT_ARTICLE, $response);
             }
         } catch (\Exception $e) {
             return ajaxReturn(ERR_CODE_INIT_ARTICLE,$e->getMessage());
         }
-        return ajaxReturn(SUCCESS,'',['id'=>$initArticleRet['data']]);
+        return ajaxReturn(SUCCESS,'',['id'=>$response]);
     }
 
 
@@ -68,12 +68,12 @@ class Article
     public function getArticleDetail()
     {
         try {
-            list($dealRet, $response) = (new ArticleModel)->getArticleDetail($this->request->param('id'));
+            list($dealRet, $response) = (new ArticleModel)->getArticleDetail(intval($this->request->param('id')));
             if (!$dealRet) {
                 return ajaxReturn(ERR_CODE_GET_ARTICLE_DETAIL, $response);
             }
         } catch (\Exception $e) {
-            return ajaxReturn(ERR_CODE_GET_ARTICLE_DETAIL,$e->getMessage());
+            return ajaxReturn(ERR_CODE_GET_ARTICLE_DETAIL, $e->getMessage());
         }
         return ajaxReturn(SUCCESS,'',$response);
     }
@@ -82,14 +82,16 @@ class Article
     {
         try {
             validate(ArticleValidate::class)->scene('edit')->check($this->param);
-            list($dealRet, $response) = (new ArticleModel)->editArticle($this->request->param('id'), $this->param);
+            $param = $this->param;
+            $param['draft'] = htmlspecialchars_decode($param['draft']);
+            list($dealRet, $response) = (new ArticleModel)->editArticle($this->request->param('id'), $param);
             if (!$dealRet) {
                 return ajaxReturn(ERR_CODE_SAVE_ARTICLE, $response);
             }
         } catch (\ValidateException $e) {
             return ajaxReturn(ERR_CODE_SAVE_ARTICLE, $e->getMessage());
         } catch (\Exception $e) {
-            return ajaxReturn(ERR_CODE_SAVE_ARTICLE,$e->getMessage());
+            return ajaxReturn(ERR_CODE_SAVE_ARTICLE,'111'.$e->getMessage());
         }
         return ajaxReturn(SUCCESS);
     }

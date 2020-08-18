@@ -5,8 +5,9 @@ use app\BaseController;
 use think\Request;
 use app\util\Token;
 use app\admin\service\Auth;
-use app\admin\model\Login as LoginModel;
 use app\admin\model\User as UserModel;
+use app\admin\model\Login as LoginModel;
+use app\admin\model\Category as CategoryModel;
 use app\admin\validate\LoginValidate;
 use think\exception\ValidateException;
 use \PHPMailer\PHPMailer;
@@ -29,7 +30,7 @@ class Login extends BaseController
     {
 		$this->request = $request;
 		$this->header = $request->header();
-		$this->param = trimParms($this->request->param());
+		$this->param = $this->request->param();
     }
 
     public function login()
@@ -66,7 +67,11 @@ class Login extends BaseController
             $this->param['account'] = $this->param['account'];
             $this->param['nickname'] = '未命名用户|'.time();
             unset($this->param['confirmPassword']);
-            LoginModel::create($this->param);
+            $userInfo = LoginModel::create($this->param);
+            list($dealRet, $response) = (new CategoryModel)->createDefaultCategory($userInfo->id);
+            if (!$dealRet) {
+                return ajaxReturn(ERR_CODE_REGISTER, $response);
+            }
         } catch (ValidateException $e) {
             // 验证失败 输出错误信息
             return ajaxReturn(ERR_CODE_REGISTER,$e->getError());

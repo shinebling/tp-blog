@@ -15,7 +15,7 @@ Route::group(function () {
 
 // 文章
 Route::group(function () {
-	Route::get('init_article', 'initArticle');
+	Route::get('create_article', 'initArticle');
 	Route::get('article_list', 'getArticleList');
 	Route::get('article_detail', 'getArticleDetail');
 	Route::get('delete_article', 'delArticle');

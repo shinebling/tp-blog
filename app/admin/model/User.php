@@ -3,6 +3,8 @@ namespace app\admin\model;
 
 use think\Model;
 use think\facade\Db;
+use think\facade\Log;
+use app\admin\service\Auth;
 use think\model\concern\SoftDelete;
 
 class User extends Model
@@ -24,7 +26,7 @@ class User extends Model
                 ->find();
             return [true, $data];
         } catch (\DataNotFoundException $e) {
-            return [false, $e->getMessage];
+            return [false, $e->getMessage()];
         }
     }
 
@@ -40,22 +42,24 @@ class User extends Model
     {
         try { 
             $updateData = [];
-            switch ($param) {
-                case 'avatar':
-                    if (!empty($param['avatar'])) {
-                        $updateData['avatar'] = $param['avatar'];
-                    }
-                    break;
-                case 'nickname':
-                    if (!empty($param['nickname'])) {
-                        $updateData['nickname'] = $param['nickname'];
-                    }
-                    break;
-                case 'password':
-                    if (!empty($param['password'])) {
-                        $updateData['password'] = Auth::getMd5($param['password']);
-                    }
-                    break;
+            foreach ($param as $key => $item) {
+                switch ($key) {
+                    case 'avatar':
+                        if (!empty($item)) {
+                            $updateData['avatar'] = $item;
+                        }
+                        break;
+                    case 'nickname':
+                        if (!empty($item)) {
+                            $updateData['nickname'] = $item;
+                        }
+                        break;
+                    case 'password':
+                        if (!empty($item)) {
+                            $updateData['password'] = Auth::getMd5($item);
+                        }
+                        break;
+                }
             }
             if (!empty($updateData)) {
                 Db::name('users')
@@ -63,8 +67,8 @@ class User extends Model
                     ->update($updateData);
             }
         } catch (\DataNotFoundException $e) {
-            return [false, $e->getMessage];
+            return [false, '111'.$e->getMessage()];
         }
-        return [true];
+        return [true, ''];
     }
 }

@@ -30,7 +30,7 @@ class Token
     /**
      * 校验token
      */
-    public static function checkToken($jwt)
+    public static function checkToken($jwt,$alg = array('HS256'))
     {
         $key = config('app.token_key');
         try {
@@ -43,13 +43,13 @@ class Token
             // 更新用户的token
             LoginModel::update(['rememberToken' => $userToken], ['id' => $userId]);
         } catch(\Firebase\JWT\SignatureInvalidException $e) {  //签名不正确
-            return [false, $e->getMessage];
+            return [false, $e->getMessage()];
         }catch(\Firebase\JWT\BeforeValidException $e) {  // 签名在某个时间点之后才能用
-            return [false, $e->getMessage];
+            return [false, $e->getMessage()];
         }catch(\Firebase\JWT\ExpiredException $e) {  // token过期
-            return [false, $e->getMessage];
+            return [false, $e->getMessage()];
         }catch(Exception $e) {  //其他错误
-            return [false, $e->getMessage];
+            return [false, $e->getMessage()];
         }
         return [true, $userId];
     }
